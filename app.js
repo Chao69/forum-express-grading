@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const flash = require('connect-flash')
 const session = require('express-session')
 const passport = require('./config/passport')
+const methodOverride = require('method-override')
 
 const db = require('./models')
 const app = express()
@@ -16,6 +17,7 @@ app.use(session({ secret: 'secret', resave: flash, saveUninitialized: false }))
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(flash())
+app.use(methodOverride('_method'))
 
 app.use((req, res, next) => {
   res.locals.success_message = req.flash('success_message')
