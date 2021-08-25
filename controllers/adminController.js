@@ -14,6 +14,14 @@ const adminController = {
     return res.render('admin/create')
   },
 
+  getRestaurant: (req, res) => {
+    return Restaurant.findByPk(req.params.id, { raw: true }).then(restaurant => {
+      return res.render('admin/restaurant', {
+        restaurant: restaurant
+      })
+    })
+  },
+  
   postRestaurant: (req, res) => {
     const { name, tel, address, opening_hours, description } = req.body
     if (!req.body.name) {
@@ -62,7 +70,7 @@ const adminController = {
 
   putRestaurant: (req, res) => {
     const { name, tel, address, opening_hours, description } = req.body
-    
+
     if (!req.body.name) {
       req.flash('error_messages', "name didn't exist")
       return res.redirect('back')
