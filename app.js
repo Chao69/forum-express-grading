@@ -11,7 +11,7 @@ const app = express()
 const port = process.env.PORT || 3000
 
 if (process.env.NODE_ENV !== 'production') {
-  require('dot.env').config()
+  require('dotenv').config()
 }
 
 app.engine('handlebars', handlebars({ defaultLayout: 'main' }))
