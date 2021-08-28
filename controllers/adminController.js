@@ -132,7 +132,17 @@ const adminController = {
       })
   },
 
-  
+  toggleAdmin: (req, res) => {
+    return User.findByPk(req.params.id)
+      .then(user => {
+        user.isAdmin = !user.isAdmin  //將點選到的使用者切換全縣狀態
+        const userState = user.isAdmin ? 'admin' : 'user' //使用者狀態
+        req.flash('success_message', `成功將${user.name}使用者更改為${userState}`)
+        //顯示成功修改權限狀態訊息
+        user.update({ isAdmin: user.isAdmin })
+        return res.redirect('/admin/users')
+      })
+  }
 }
 
 module.exports = adminController

@@ -5,6 +5,7 @@ const flash = require('connect-flash')
 const session = require('express-session')
 const passport = require('./config/passport')
 const methodOverride = require('method-override')
+const helpers = require('./_helpers')
 
 const db = require('./models')
 const app = express()
@@ -27,7 +28,7 @@ app.use('/upload', express.static(__dirname + '/upload'))
 app.use((req, res, next) => {
   res.locals.success_message = req.flash('success_message')
   res.locals.error_message = req.flash('error_message')
-  res.locals.user = req.user
+  res.locals.user = helpers.getUser(req)
   next()
 })
 
