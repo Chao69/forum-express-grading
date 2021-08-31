@@ -33,7 +33,7 @@ let categoryController = {
       return Category.create({
         name
       }).then((category) => {
-        return redirect('/admin/categories')
+        return res.redirect('/admin/categories')
       })
     }
   },
@@ -51,6 +51,16 @@ let categoryController = {
         res.redirect('/admin/categories')
       })
     }
+  },
+
+  deleteCategory: (req, res) => {
+    return Category.findByPk(req.params.id)
+      .then(category => {
+        category.destroy()
+      })
+      .then(() => {
+        res.redirect('/admin/categories')
+      })
   }
 }
 
