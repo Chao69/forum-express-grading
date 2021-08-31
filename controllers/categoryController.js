@@ -7,13 +7,26 @@ let categoryController = {
       raw: true,
       nest: true
     }).then(categories => {
-      return res.render('admin/categories', { categories })
+      const id = req.params.id
+
+      if (id) {
+        Category.findByPk(id)
+          .then((category) => {
+            return res.render('admin/categories', {
+              categories: categories,
+              category: category.toJSON()
+            })
+          })
+      } else {
+        return res.render('admin/categories', { categories: categories })
+      }
     })
   },
 
   postCategory: (req, res) => {
-    const { name } = req.body
-    if(!name) {
+    const name = req.body.name
+
+    if (!name) {
       req.flash('error_message', "name didn't exist")
       return res.redirect('/admin/categories')
     } else {
@@ -21,6 +34,21 @@ let categoryController = {
         name
       }).then((category) => {
         return redirect('/admin/categories')
+      })
+    }
+  },
+  
+  putCategory: (req, res) => {
+    if (!req.body.name) {
+      req.flash('error_message', "name didn't exist")
+      return redirect('back')
+    } else {
+      return Category.findByPk(req.params.id)
+      .then(category => {
+        category.update(req.body)
+      })
+      .then(() => {
+        res.redirect('/admin/categories')
       })
     }
   }
