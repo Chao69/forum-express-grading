@@ -1,3 +1,5 @@
+const fs = require('fs')
+
 const bcrypt = require("bcryptjs")
 const db = require('../models')
 const User = db.User
@@ -30,17 +32,71 @@ const userController = {
         })
     }
   },
+
   signInPage: (req, res) => {
     return res.render('signin')
   },
+
   signIn: (req, res) => {
     req.flash('success_message', '登入成功！')
     res.redirect('/restaurants')
   },
-logout: (req, res) => {
-  req.flash('success_message', '登出成功！')
-  req.logout()
-  res.redirect('/signin')
+
+  logout: (req, res) => {
+    req.flash('success_message', '登出成功！')
+    req.logout()
+    res.redirect('/signin')
+  },
+
+  getUser: (req, res) => {
+    User.findByPk(req.params.id)
+      .then(user => {
+        return res.render('profile', { user: user.toJSON() })
+      })
+  },
+
+  editUser: (req, res) => {
+    User.findByPk(req.params.id)
+      .then(user => {
+        if (user.id !== req.user.id) {
+          req.flash('error_message', `Only ${user.name} can edit profile.`)
+          return res.redirect('back')
+        }
+        return res.render('editProfile', { user: user.toJSON() })
+      })
+  },
+
+  putUser: (req, res) => {
+    const { file } = req
+    if (file) {
+      fs.readFile(file.path, (err, data) => {
+        if (err) console.log('Error: ', err)
+        fs.writeFile(`upload/${file.originalname}`, data, () => {
+          return User.findByPk(req.params.id)
+            .then(user => {
+              user.update({
+                name: req.body.name,
+                image: file ? `/upload/${file.originalname}` : user.image
+              })
+                .then(user => {
+                  return res.redirect(`/users/${user.id}`)
+                })
+            })
+        })
+      })
+    } else {
+      return User.findByPk(req.params.id)
+        .then(user => {
+          user.update({
+            name: req.body.name,
+            image: user.image
+          })
+            .then(user => {
+              return res.redirect(`/users/${user.id}`)
+            })
+        })
+    }
+  }
 }
-}
+
 module.exports = userController

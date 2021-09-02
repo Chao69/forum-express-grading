@@ -22,13 +22,17 @@ module.exports = (app, passport) => {
     }
     res.redirect('/signin')
   }
-
   // user page
   app.get('/', authenticated, (req, res) => res.redirect('/restaurants'))
   app.get('/restaurants', authenticated, restController.getRestaurants)
   app.get('/restaurants/:id', authenticated, restController.getRestaurant)
 
   app.post('/comments', authenticated, commentController.postComment)
+  app.delete('/comments/:id', authenticatedAdmin, commentController.deleteComment)
+
+  app.get('/users/:id', authenticated, userController.getUser)
+  app.get('/users/:id/edit', authenticated, userController.editUser)
+  app.put('/users/:id', authenticated, upload.single('image'), userController.putUser)
 
   // admin restaurants function
   app.get('/admin', authenticatedAdmin, (req, res) => res.redirect('/admin/restaurants'))
