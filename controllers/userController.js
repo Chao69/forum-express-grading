@@ -60,9 +60,10 @@ const userController = {
           where: { UserId: user.id }
         })
           .then(results => {
+            console.log('results:', results.rows)
             const comments = results.rows.map(comment => ({
               ...comment,
-              restaurantId: comment.Restaurant.id,
+              restaurantId: comment.RestaurantId,
               restaurantImage: comment.Restaurant.image
             }))
             console.log('comments:', comments)
