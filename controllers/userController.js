@@ -67,6 +67,7 @@ const userController = {
   },
 
   putUser: (req, res) => {
+    const { name } = req.body
     const { file } = req
     if (file) {
       fs.readFile(file.path, (err, data) => {
@@ -75,7 +76,7 @@ const userController = {
           return User.findByPk(req.params.id)
             .then(user => {
               user.update({
-                name: req.body.name,
+                name,
                 image: file ? `/upload/${file.originalname}` : user.image
               })
                 .then(user => {
@@ -88,7 +89,7 @@ const userController = {
       return User.findByPk(req.params.id)
         .then(user => {
           user.update({
-            name: req.body.name,
+            name,
             image: user.image
           })
             .then(user => {
