@@ -3,6 +3,8 @@ const fs = require('fs')
 const bcrypt = require("bcryptjs")
 const db = require('../models')
 const User = db.User
+const Comment = db.Comment
+const Restaurant = db.Restaurant
 
 const userController = {
   signUpPage: (req, res) => {
@@ -51,7 +53,26 @@ const userController = {
   getUser: (req, res) => {
     User.findByPk(req.params.id)
       .then(user => {
-        return res.render('profile', { user: user.toJSON() })
+        Comment.findAndCountAll({
+          raw: true,
+          nest: true,
+          include: Restaurant,
+          where: { UserId: user.id }
+        })
+          .then(results => {
+            const comments = results.rows.map(comment => ({
+              ...comment,
+              restaurantId: comment.Restaurant.id,
+              restaurantImage: comment.Restaurant.image
+            }))
+            console.log('comments:', comments)
+            return res.render('profile',
+              {
+                user: user.toJSON(),
+                comments,
+                commentCounts: results.count
+              })
+          })
       })
   },
 
