@@ -59,9 +59,8 @@ const restController = {
         { model: Comment, include: [User] }
       ]
     }).then(restaurant => {
-      return res.render('restaurant', {
-        restaurant: restaurant.toJSON()
-      })
+      restaurant.increment('viewCounts', { by: 1 })
+      return res.render('restaurant', { restaurant: restaurant.toJSON() })
     })
   },
 
@@ -96,7 +95,7 @@ const restController = {
         raw: true,
         nest: true,
         include: [Restaurant]
-      })  
+      })
     ]).then(([restaurant, comments]) => {
       const restaurantPure = restaurant.toJSON()
       let commentCounts = 0
