@@ -2,9 +2,11 @@ const fs = require('fs')
 
 const bcrypt = require("bcryptjs")
 const db = require('../models')
+const imgur = require('imgur-node-api')
 const User = db.User
 const Comment = db.Comment
 const Restaurant = db.Restaurant
+const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
 const userController = {
   signUpPage: (req, res) => {
@@ -92,20 +94,18 @@ const userController = {
     const { name } = req.body
     const { file } = req
     if (file) {
-      fs.readFile(file.path, (err, data) => {
-        if (err) console.log('Error: ', err)
-        fs.writeFile(`upload/${file.originalname}`, data, () => {
-          return User.findByPk(req.params.id)
-            .then(user => {
-              user.update({
-                name,
-                image: file ? `/upload/${file.originalname}` : user.image
-              })
-                .then(user => {
-                  return res.redirect(`/users/${user.id}`)
-                })
+      imgur.setClientID(IMGUR_CLIENT_ID)
+      imgur.upload(file.path, (err, img) => {
+        return User.findByPk(req.params.id)
+          .then(user => {
+            user.update({
+              name,
+              image: file ? img.data.link : user.image
             })
-        })
+              .then(user => {
+                return res.redirect(`/users/${user.id}`)
+              })
+          })
       })
     } else {
       return User.findByPk(req.params.id)
