@@ -29,12 +29,18 @@ module.exports = (app, passport) => {
   app.get('/restaurants/:id/dashboard', authenticated, restController.getDashboard)
   app.get('/restaurants/:id', authenticated, restController.getRestaurant)
 
+  // comment
   app.post('/comments', authenticated, commentController.postComment)
   app.delete('/comments/:id', authenticatedAdmin, commentController.deleteComment)
 
+  // profile 
   app.get('/users/:id', authenticated, userController.getUser)
   app.get('/users/:id/edit', authenticated, userController.editUser)
   app.put('/users/:id', authenticated, upload.single('image'), userController.putUser)
+
+  // favorite
+  app.post('/favorite/:restaurantId', authenticated, userController.addFavorite)
+  app.delete('/favorite/:restaurantId', authenticated, userController.removeFavorite)
 
   // admin restaurants function
   app.get('/admin', authenticatedAdmin, (req, res) => res.redirect('/admin/restaurants'))
