@@ -7,6 +7,7 @@ const User = db.User
 const Comment = db.Comment
 const Restaurant = db.Restaurant
 const Favorite = db.Favorite
+const Like = db.Like
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
 const userController = {
@@ -141,9 +142,34 @@ const userController = {
     })
       .then(favorite => {
         favorite.destroy()
-        .then(() => {
-          return res.redirect('back')
-        })
+          .then(() => {
+            return res.redirect('back')
+          })
+      })
+  },
+
+  like: (req, res) => {
+    return Like.create({
+      UserId: req.user.id,
+      RestaurantId: req.params.restaurantId
+    })
+      .then(() => {
+        return res.redirect('back')
+      })
+  },
+
+  unlike: (req, res) => {
+    return Like.findOne({
+      where: {
+        UserId: req.user.id,
+        RestaurantId: req.params.restaurantId
+      }
+    })
+      .then(like => {
+        like.destroy()
+          .then(() => {
+            return res.redirect('back')
+          })
       })
   }
 }
