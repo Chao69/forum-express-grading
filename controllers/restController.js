@@ -1,8 +1,10 @@
 const db = require('../models')
+const restaurant = require('../models/restaurant')
 const Restaurant = db.Restaurant
 const Category = db.Category
 const Comment = db.Comment
 const User = db.User
+const Favorite = db.Favorite
 
 const pageLimit = 10
 
@@ -60,7 +62,7 @@ const restController = {
         Category,
         { model: User, as: 'FavoritedUsers' },
         { model: Comment, include: [User] },
-        { model: User, as: 'LikedUsers'}
+        { model: User, as: 'LikedUsers' }
       ]
     }).then(restaurant => {
       const isFavorited = restaurant.FavoritedUsers.map(d => d.id).includes(req.user.id)
@@ -120,6 +122,27 @@ const restController = {
         commentCounts
       })
     })
+  },
+
+  getTopRestaurants: (req, res) => {
+    return Restaurant.findAndCountAll({
+      limit: 10,
+      include: [
+        { model: User, as: 'FavoritedUsers' },
+        Category
+      ],
+    })
+      .then(results => {
+        restaurants = results.rows.map(restaurant => ({
+          ...restaurant.dataValues,
+          description: restaurant.description.substring(0, 50),
+          category: restaurant.Category.name,
+          FavoritedCount: restaurant.FavoritedUsers.length,
+          isFavorited: restaurant.FavoritedUsers.map(d => d.id).includes(req.user.id)
+        }))
+        restaurants = restaurants.sort((a, b) => b.FavoritedCount - a.FavoritedCount)
+        return res.render('topRestaurants', { restaurants })
+      })
   }
 }
 

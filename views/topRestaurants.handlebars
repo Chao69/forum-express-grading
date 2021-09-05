@@ -1,0 +1,40 @@
+<ul class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link" href="#">首頁</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="/restaurants/feeds">最新動態</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="/users/top">美食達人</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link active" href="/restaurants/top">Top10餐廳</a>
+  </li>
+</ul>
+
+<div class="container d-flex justify-content-center flex-wrap">
+  {{#each restaurants}}
+  <div class="row">
+    <div class="card" style="width: 18rem;">
+      <img class="card-img-top" src="{{ this.image }}" alt="Card image cap">
+      <div class="card-body">
+        <h5 class="card-title">{{ this.name }}</h5>
+        <span class="badge badge-secondary">收藏人數：{{ this.FavoritedCount }}</span>
+        <p>[{{ this.category }}]</p>
+        <p class="card-text">{{ this.description }}
+        </p>
+        <p>
+          {{#if this.isFavorited }}
+        <form action="/favorite/{{this.id}}?_method=DELETE" method="POST" style="display: contents;"><button
+            type="submit" class="btn btn-danger">取消收藏</button></form>
+        {{else}}
+        <form action="/favorite/{{this.id}}" method="POST" style="display: contents;"><button type="submit"
+            class="btn btn-primary">收藏</button></form>
+        {{/if}}
+        </p>
+      </div>
+    </div>
+  </div>
+  {{/each}}
+</div>
