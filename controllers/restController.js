@@ -125,15 +125,14 @@ const restController = {
   },
 
   getTopRestaurants: (req, res) => {
-    return Restaurant.findAndCountAll({
-      limit: 10,
+    return Restaurant.findAll({
       include: [
         { model: User, as: 'FavoritedUsers' },
         Category
       ],
     })
-      .then(results => {
-        restaurants = results.rows.map(restaurant => ({
+      .then(data => {
+        restaurants = data.map(restaurant => ({
           ...restaurant.dataValues,
           description: restaurant.description.substring(0, 50),
           category: restaurant.Category.name,
@@ -141,6 +140,7 @@ const restController = {
           isFavorited: restaurant.FavoritedUsers.map(d => d.id).includes(req.user.id)
         }))
         restaurants = restaurants.sort((a, b) => b.FavoritedCount - a.FavoritedCount)
+        restaurants = restaurants.slice(0, 10)
         return res.render('topRestaurants', { restaurants })
       })
   }
