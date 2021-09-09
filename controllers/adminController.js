@@ -22,7 +22,7 @@ const adminController = {
       raw: true,
       nest: true
     }).then(categories => {
-      return res.render('admin/create', {categories})
+      return res.render('admin/create', { categories })
     })
   },
 
@@ -145,10 +145,11 @@ const adminController = {
   },
 
   getUsers: (req, res) => {
-    return User.findAll({ raw: true })
-      .then(users => {
-        return res.render('admin/users', { users })
-      })
+    adminController.deleteRestaurant(req, res, (data) => {
+      if (data['status'] === 'success') {
+        return res.redirect('/admin/restaurants')
+      }
+    })
   },
 
   toggleAdmin: (req, res) => {
