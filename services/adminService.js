@@ -18,7 +18,7 @@ const adminService = {
       req.params.id,
       { include: [Category] }
     ).then(restaurant => {
-      callback({ restaurant })
+      callback({ restaurant: restaurant.toJSON() })
     })
   }
 }
